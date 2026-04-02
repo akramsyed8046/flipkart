@@ -6,7 +6,7 @@
 
     <groupId>com.flipkart</groupId>
     <artifactId>flipkart-app</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-snapshots</version>
     <packaging>war</packaging>
 
     <!-- ✅ Add Spring Boot parent to manage versions -->
