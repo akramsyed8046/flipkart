@@ -45,6 +45,19 @@
         </dependency>
     </dependencies>
 
+<distributionManagement>
+    <repository>
+        <id>nexus-releases</id>
+        <name>Nexus Release Repo</name>
+        <url>http://13.127.232.101:8081/repository/maven-releases/</url>
+    </repository>
+
+    <snapshotRepository>
+        <id>nexus-snapshots</id>
+        <name>Nexus Snapshot Repo</name>
+        <url>http://13.127.232.101:8081/repository/maven-snapshots/</url>
+    </snapshotRepository>
+</distributionManagement>
     <build>
         <plugins>
             <!-- WAR Plugin -->
