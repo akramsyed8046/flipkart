@@ -28,7 +28,7 @@ pipeline {
             steps {
                 withMaven(
                     maven: 'maven3',
-                    jdk: 'jdk17',
+                    jdk: 'JDK25',
                     globalMavenSettingsConfig: 'settings.xml',
                     traceability: true
                 ) {
