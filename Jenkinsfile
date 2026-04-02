@@ -7,6 +7,7 @@ pipeline {
     }
 
     environment {
+        SONARQUBE_ENV = 'sq'
         DOCKER_IMAGE = "akramsyed8046/flipkart:latest"
     }
 
@@ -18,9 +19,26 @@ pipeline {
             }
         }
 
-        stage('Build WAR') {
+        stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean install'
+            }
+        }
+
+        // 🔥 Sonar Added Here (from pipeline 1)
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
 
@@ -29,8 +47,7 @@ pipeline {
                 withMaven(
                     maven: 'maven3',
                     jdk: 'JDK25',
-                    globalMavenSettingsConfig: 'settings.xml',
-                    traceability: true
+                    globalMavenSettingsConfig: 'settings.xml'
                 ) {
                     sh 'mvn clean deploy -DskipTests'
                 }
@@ -51,7 +68,7 @@ pipeline {
             }
         }
 
-        stage('Deploy Local Container') {
+        stage('Deploy Container') {
             steps {
                 sh '''
                 docker rm -f flipkart-app || true
