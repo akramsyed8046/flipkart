@@ -19,6 +19,14 @@ pipeline {
             }
         }
 
+         stage('JENKINS TO NEXUS') {
+            steps {
+              withMaven(globalMavenSettingsConfig: 'settings.xml', jdk: 'jkd17', maven: 'maven3', traceability: true) {
+             sh 'mvn deploy'
+             }
+         }
+
+
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${DOCKER_IMAGE} ."
