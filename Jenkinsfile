@@ -1,12 +1,17 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven3'
+        jdk 'jdk17'
+    }
+
     environment {
         DOCKER_IMAGE = "akramsyed8046/flipkart:latest"
-        DOCKER_CREDENTIALS = credentials('docker-hub') // must match Jenkins credentials ID
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/akramsyed8046/flipkart.git'
@@ -19,13 +24,18 @@ pipeline {
             }
         }
 
-         stage('JENKINS TO NEXUS') {
+        stage('Deploy to Nexus') {
             steps {
-              withMaven(globalMavenSettingsConfig: 'settings.xml', jdk: 'jkd17', maven: 'maven3', traceability: true) {
-             sh 'mvn deploy'
-             }
-         }
-
+                withMaven(
+                    maven: 'maven3',
+                    jdk: 'jdk17',
+                    globalMavenSettingsConfig: 'settings.xml',
+                    traceability: true
+                ) {
+                    sh 'mvn clean deploy -DskipTests'
+                }
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -43,10 +53,10 @@ pipeline {
 
         stage('Deploy Local Container') {
             steps {
-                sh """
+                sh '''
                 docker rm -f flipkart-app || true
-                docker run -d --name flipkart-app -p 8999:8080 ${DOCKER_IMAGE}
-                """
+                docker run -d --name flipkart-app -p 8999:8080 akramsyed8046/flipkart:latest
+                '''
             }
         }
     }
