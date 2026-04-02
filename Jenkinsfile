@@ -25,18 +25,24 @@ pipeline {
             }
         }
 
-        // 🔥 Sonar Added Here (from pipeline 1)
+        // 🔥 FIXED SONAR STAGE
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
-                    sh 'mvn sonar:sonar'
+                    sh '''
+                    mvn sonar:sonar \
+                    -Dsonar.projectKey=flipkart-app \
+                    -Dsonar.projectName=flipkart-app \
+                    -Dsonar.java.binaries=target/classes
+                    '''
                 }
             }
         }
 
+        // 🔥 FIXED QUALITY GATE (Timeout increased)
         stage('Quality Gate') {
             steps {
-                timeout(time: 2, unit: 'MINUTES') {
+                timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
